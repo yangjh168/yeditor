@@ -1,0 +1,30 @@
+{
+  "name": "yeditor",
+  "version": "1.0.0",
+  "description": "使用es重构ueditor的富文本编辑器",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yangjh168/yeditor.git"
+  },
+  "author": "yangjh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yangjh168/yeditor/issues"
+  },
+  "homepage": "https://github.com/yangjh168/yeditor#readme",
+  "devDependencies": {
+    "@babel/core": "^7.22.20",
+    "@babel/preset-env": "^7.22.20",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.2.1",
+    "rollup": "^3.29.2"
+  }
+}
