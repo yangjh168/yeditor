@@ -40,6 +40,35 @@ var attrFix = ie && browser.version < 9
     "table-caption"
   ]);
 
+//节点常量
+export const NODE_ELEMENT = 1
+export const NODE_DOCUMENT = 9
+export const NODE_TEXT = 3
+export const NODE_COMMENT = 8
+export const NODE_DOCUMENT_FRAGMENT = 11
+
+//位置关系
+export const POSITION_IDENTICAL = 0
+export const POSITION_DISCONNECTED = 1
+export const POSITION_FOLLOWING = 2
+export const POSITION_PRECEDING = 4
+export const POSITION_IS_CONTAINED = 8
+export const POSITION_CONTAINS = 16
+//ie6使用其他的会有一段空白出现
+export const fillChar = ie && browser.version == "6" ? "\ufeff" : "\u200B"
+//-------------------------Node部分--------------------------------
+export const keys = {
+  /*Backspace*/ 8: 1,
+  /*Delete*/ 46: 1,
+  /*Shift*/ 16: 1,
+  /*Ctrl*/ 17: 1,
+  /*Alt*/ 18: 1,
+  37: 1,
+  38: 1,
+  39: 1,
+  40: 1,
+  13: 1 /*enter*/
+}
 /**
  * Dom操作工具包
  * @unfile
@@ -70,7 +99,7 @@ export function getDomNode(node, start, ltr, startFromChild, fn, guard) {
      * @example
      * ```javascript
      * //output: 20
-     * var position = UE.dom.domUtils.getPosition( document.documentElement, document.body );
+     * var position = UE.dom.getPosition( document.documentElement, document.body );
      *
      * switch ( position ) {
      *
@@ -223,7 +252,7 @@ export function getNodeIndex(node, ignoreTextNode) {
    * ```
    */
 export function inDoc(node, doc) {
-  return domUtils.getPosition(node, doc) == 10;
+  return getPosition(node, doc) == 10;
 }
 /**
    * 根据给定的过滤规则filterFn， 查找符合该过滤规则的node节点的第一个祖先节点，
@@ -284,11 +313,11 @@ export function inDoc(node, doc) {
    * ```
    */
 export function findParent(node, filterFn, includeSelf) {
-  if (node && !domUtils.isBody(node)) {
+  if (node && !isBody(node)) {
     node = includeSelf ? node : node.parentNode;
     while (node) {
-      if (!filterFn || filterFn(node) || domUtils.isBody(node)) {
-        return filterFn && !filterFn(node) && domUtils.isBody(node)
+      if (!filterFn || filterFn(node) || isBody(node)) {
+        return filterFn && !filterFn(node) && isBody(node)
           ? null
           : node;
       }
@@ -331,7 +360,7 @@ export function findParent(node, filterFn, includeSelf) {
    */
 export function findParentByTagName(node, tagNames, includeSelf, excludeFn) {
   tagNames = utils.listToMap(utils.isArray(tagNames) ? tagNames : [tagNames]);
-  return domUtils.findParent(
+  return findParent(
     node,
     function(node) {
       return tagNames[node.tagName] && !(excludeFn && excludeFn(node));
@@ -362,7 +391,7 @@ export function findParents(node, includeSelf, filterFn, closerFirst) {
   var parents = includeSelf && ((filterFn && filterFn(node)) || !filterFn)
     ? [node]
     : [];
-  while ((node = domUtils.findParent(node, filterFn))) {
+  while ((node = findParent(node, filterFn))) {
     parents.push(node);
   }
   return closerFirst ? parents : parents.reverse();
@@ -624,15 +653,15 @@ export function clearEmptySibling(node, ignoreNext, ignorePre) {
     var tmpNode;
     while (
       next &&
-      !domUtils.isBookmarkNode(next) &&
-      (domUtils.isEmptyInlineElement(next) ||
+      !isBookmarkNode(next) &&
+      (isEmptyInlineElement(next) ||
         //这里不能把空格算进来会吧空格干掉，出现文字间的空格丢掉了
-        !new RegExp("[^\t\n\r" + domUtils.fillChar + "]").test(
+        !new RegExp("[^\t\n\r" + fillChar + "]").test(
           next.nodeValue
         ))
     ) {
       tmpNode = next[dir];
-      domUtils.remove(next);
+      remove(next);
       next = tmpNode;
     }
   }
@@ -659,14 +688,14 @@ export function split(node, offset) {
   var doc = node.ownerDocument;
   if (browser.ie && offset == node.nodeValue.length) {
     var next = doc.createTextNode("");
-    return domUtils.insertAfter(node, next);
+    return insertAfter(node, next);
   }
   var retval = node.splitText(offset);
   //ie8下splitText不会跟新childNodes,我们手动触发他的更新
   if (browser.ie8) {
     var tmpNode = doc.createTextNode("");
-    domUtils.insertAfter(retval, tmpNode);
-    domUtils.remove(tmpNode);
+    insertAfter(retval, tmpNode);
+    remove(tmpNode);
   }
   return retval;
 }
@@ -688,7 +717,7 @@ export function split(node, offset) {
    * ```
    */
 export function isWhitespace(node) {
-  return !new RegExp("[^ \t\n\r" + domUtils.fillChar + "]").test(
+  return !new RegExp("[^ \t\n\r" + fillChar + "]").test(
     node.nodeValue
   );
 }
@@ -873,7 +902,7 @@ export function isSameElement(nodeA, nodeB) {
       if (attrA.specified) {
         al++;
       }
-      if (domUtils.isSameStyle(nodeA, nodeB)) {
+      if (isSameStyle(nodeA, nodeB)) {
         continue;
       } else {
         return false;
@@ -1000,7 +1029,7 @@ export function isBlockElm(node) {
   return (
     node.nodeType == 1 &&
     (dtd.$block[node.tagName] ||
-      styleBlock[domUtils.getComputedStyle(node, "display")]) &&
+      styleBlock[getComputedStyle(node, "display")]) &&
     !dtd.$nonChild[node.tagName]
   );
 }
@@ -1078,7 +1107,7 @@ export function breakParent(node, parent) {
   tmpNode.insertBefore(leftNodes, parent);
   tmpNode.insertBefore(rightNodes, parent);
   tmpNode.insertBefore(node, rightNodes);
-  domUtils.remove(parent);
+  remove(parent);
   return node;
 }
 /**
@@ -1101,12 +1130,12 @@ export function isEmptyInlineElement(node) {
   node = node.firstChild;
   while (node) {
     //如果是创建的bookmark就跳过
-    if (domUtils.isBookmarkNode(node)) {
+    if (isBookmarkNode(node)) {
       return 0;
     }
     if (
-      (node.nodeType == 1 && !domUtils.isEmptyInlineElement(node)) ||
-      (node.nodeType == 3 && !domUtils.isWhitespace(node))
+      (node.nodeType == 1 && !isEmptyInlineElement(node)) ||
+      (node.nodeType == 3 && !isWhitespace(node))
     ) {
       return 0;
     }
@@ -1144,7 +1173,7 @@ export function trimWhiteTextNode(node) {
     while (
       (child = node[dir]) &&
       child.nodeType == 3 &&
-      domUtils.isWhitespace(child)
+      isWhitespace(child)
     ) {
       node.removeChild(child);
     }
@@ -1164,18 +1193,18 @@ export function trimWhiteTextNode(node) {
    * <p><span style="font-size:12px;">xxaaxx</span></p>
    */
 export function mergeChild(node, tagName, attrs) {
-  var list = domUtils.getElementsByTagName(node, node.tagName.toLowerCase());
+  var list = getElementsByTagName(node, node.tagName.toLowerCase());
   for (var i = 0, ci; (ci = list[i++]); ) {
-    if (!ci.parentNode || domUtils.isBookmarkNode(ci)) {
+    if (!ci.parentNode || isBookmarkNode(ci)) {
       continue;
     }
     //span单独处理
     if (ci.tagName.toLowerCase() == "span") {
       if (node === ci.parentNode) {
-        domUtils.trimWhiteTextNode(node);
+        trimWhiteTextNode(node);
         if (node.childNodes.length == 1) {
           node.style.cssText = ci.style.cssText + ";" + node.style.cssText;
-          domUtils.remove(ci, true);
+          remove(ci, true);
           continue;
         }
       }
@@ -1191,13 +1220,13 @@ export function mergeChild(node, tagName, attrs) {
           }
         }
       }
-      if (domUtils.isSameStyle(ci, node)) {
-        domUtils.remove(ci, true);
+      if (isSameStyle(ci, node)) {
+        remove(ci, true);
       }
       continue;
     }
-    if (domUtils.isSameElement(node, ci)) {
-      domUtils.remove(ci, true);
+    if (isSameElement(node, ci)) {
+      remove(ci, true);
     }
   }
 }
@@ -1213,7 +1242,7 @@ export function getElementsByTagName(node, name, filter) {
   if (filter && utils.isString(filter)) {
     var className = filter;
     filter = function(node) {
-      return domUtils.hasClass(node, className);
+      return hasClass(node, className);
     };
   }
   name = utils.trim(name).replace(/[ ]{2,}/g, " ").split(" ");
@@ -1259,10 +1288,10 @@ export function mergeToParent(node) {
   while (parent && dtd.$removeEmpty[parent.tagName]) {
     if (parent.tagName == node.tagName || parent.tagName == "A") {
       //针对a标签单独处理
-      domUtils.trimWhiteTextNode(parent);
+      trimWhiteTextNode(parent);
       //span需要特殊处理  不处理这样的情况 <span stlye="color:#fff">xxx<span style="color:#ccc">xxx</span>xxx</span>
       if (
-        (parent.tagName == "SPAN" && !domUtils.isSameStyle(parent, node)) ||
+        (parent.tagName == "SPAN" && !isSameStyle(parent, node)) ||
         (parent.tagName == "A" && node.tagName == "SPAN")
       ) {
         if (parent.childNodes.length > 1 || parent !== node.parentNode) {
@@ -1279,7 +1308,7 @@ export function mergeToParent(node) {
         }
       }
       if (parent.tagName != "A") {
-        parent === node.parentNode && domUtils.remove(node, true);
+        parent === node.parentNode && remove(node, true);
         break;
       }
     }
@@ -1345,9 +1374,9 @@ export function mergeSibling(node, ignorePre, ignoreNext) {
     var next;
     if (
       (next = node[rtl]) &&
-      !domUtils.isBookmarkNode(next) &&
+      !isBookmarkNode(next) &&
       next.nodeType == 1 &&
-      domUtils.isSameElement(node, next)
+      isSameElement(node, next)
     ) {
       while (next.firstChild) {
         if (start == "firstChild") {
@@ -1356,7 +1385,7 @@ export function mergeSibling(node, ignorePre, ignoreNext) {
           node.appendChild(next.firstChild);
         }
       }
-      domUtils.remove(next);
+      remove(next);
     }
   }
   !ignorePre && merge("previousSibling", "firstChild", node);
@@ -1484,7 +1513,7 @@ export function removeAttributes(node, attrNames) {
    * ```
    */
 export function createElement(doc, tag, attrs) {
-  return domUtils.setAttributes(doc.createElement(tag), attrs);
+  return setAttributes(doc.createElement(tag), attrs);
 }
 /**
    * 为节点node添加属性attrs，attrs为属性键值对
@@ -1594,7 +1623,7 @@ export function getComputedStyle(element, styleName) {
   }
   try {
     var value =
-      domUtils.getStyle(element, styleName) ||
+      getStyle(element, styleName) ||
       (window.getComputedStyle
         ? domUtils
             .getWindow(element)
@@ -1660,7 +1689,7 @@ export function removeClasses(elm, classNames) {
   if (cls) {
     elm.className = cls;
   } else {
-    domUtils.removeAttributes(elm, ["class"]);
+    removeAttributes(elm, ["class"]);
   }
 }
 /**
@@ -1824,7 +1853,7 @@ export function removeStyle(element, name) {
   }
 
   if (!element.style.cssText) {
-    domUtils.removeAttributes(element, ["style"]);
+    removeAttributes(element, ["style"]);
   }
 }
 /**
@@ -1913,7 +1942,7 @@ export function setStyle(element, name, value) {
 export function setStyles(element, styles) {
   for (var name in styles) {
     if (styles.hasOwnProperty(name)) {
-      domUtils.setStyle(element, name, styles[name]);
+      setStyle(element, name, styles[name]);
     }
   }
 }
@@ -2006,11 +2035,11 @@ export function getChildCount(node, fn) {
 export function isEmptyNode(node) {
   return (
     !node.firstChild ||
-    domUtils.getChildCount(node, function(node) {
+    getChildCount(node, function(node) {
       return (
-        !domUtils.isBr(node) &&
-        !domUtils.isBookmarkNode(node) &&
-        !domUtils.isWhitespace(node)
+        !isBr(node) &&
+        !isBookmarkNode(node) &&
+        !isWhitespace(node)
       );
     }) == 0
   );
@@ -2018,7 +2047,7 @@ export function isEmptyNode(node) {
 export function clearSelectedArr(nodes) {
   var node;
   while ((node = nodes.pop())) {
-    domUtils.removeAttributes(node, ["class"]);
+    removeAttributes(node, ["class"]);
   }
 }
 /**
@@ -2056,7 +2085,7 @@ export function scrollToView(node, win, offsetTop) {
   var winHeight = getViewPaneSize().height,
     offset = winHeight * -1 + offsetTop;
   offset += node.offsetHeight || 0;
-  var elementPosition = domUtils.getXY(node);
+  var elementPosition = getXY(node);
   offset += elementPosition.y;
   var currentScroll = getScrollPosition(win).y;
   // offset += 50;
@@ -2085,9 +2114,9 @@ export function isFillChar(node, isInStart) {
   if (node.nodeType != 3) return false;
   var text = node.nodeValue;
   if (isInStart) {
-    return new RegExp("^" + domUtils.fillChar).test(text);
+    return new RegExp("^" + fillChar).test(text);
   }
-  return !text.replace(new RegExp(domUtils.fillChar, "g"), "").length;
+  return !text.replace(new RegExp(fillChar, "g"), "").length;
 }
 export function isStartInblock(range) {
   var tmpRange = range.cloneRange(),
@@ -2097,7 +2126,7 @@ export function isStartInblock(range) {
   if (start.nodeType == 1 && start.childNodes[tmpRange.startOffset]) {
     start = start.childNodes[tmpRange.startOffset];
     var pre = start.previousSibling;
-    while (pre && domUtils.isFillChar(pre)) {
+    while (pre && isFillChar(pre)) {
       start = pre;
       pre = pre.previousSibling;
     }
@@ -2107,7 +2136,7 @@ export function isStartInblock(range) {
     start = tmpRange.startContainer;
   }
 
-  while (start && domUtils.isFillChar(start)) {
+  while (start && isFillChar(start)) {
     tmp = start;
     start = start.previousSibling;
   }
@@ -2117,14 +2146,14 @@ export function isStartInblock(range) {
   }
   if (
     start.nodeType == 1 &&
-    domUtils.isEmptyNode(start) &&
+    isEmptyNode(start) &&
     tmpRange.startOffset == 1
   ) {
     tmpRange.setStart(start, 0).collapse(true);
   }
   while (!tmpRange.startOffset) {
     start = tmpRange.startContainer;
-    if (domUtils.isBlockElm(start) || domUtils.isBody(start)) {
+    if (isBlockElm(start) || isBody(start)) {
       flag = 1;
       break;
     }
@@ -2133,7 +2162,7 @@ export function isStartInblock(range) {
     if (!pre) {
       tmpRange.setStartBefore(tmpRange.startContainer);
     } else {
-      while (pre && domUtils.isFillChar(pre)) {
+      while (pre && isFillChar(pre)) {
         tmpNode = pre;
         pre = pre.previousSibling;
       }
@@ -2144,7 +2173,7 @@ export function isStartInblock(range) {
       }
     }
   }
-  return flag && !domUtils.isBody(tmpRange.startContainer) ? 1 : 0;
+  return flag && !isBody(tmpRange.startContainer) ? 1 : 0;
 }
 
 /**
@@ -2172,7 +2201,7 @@ export function isStartInblock(range) {
    */
 export function isEmptyBlock(node, reg) {
   if (node.nodeType != 1) return 0;
-  reg = reg || new RegExp("[ \xa0\t\r\n" + domUtils.fillChar + "]", "g");
+  reg = reg || new RegExp("[ \xa0\t\r\n" + fillChar + "]", "g");
 
   if (
     node[browser.ie ? "innerText" : "textContent"].replace(reg, "").length > 0
@@ -2253,7 +2282,7 @@ export function setViewportOffset(element, offset) {
    */
 export function fillNode(doc, node) {
   var tmpNode = browser.ie
-    ? doc.createTextNode(domUtils.fillChar)
+    ? doc.createTextNode(fillChar)
     : doc.createElement("br");
   node.innerHTML = "";
   node.appendChild(tmpNode);
@@ -2507,7 +2536,7 @@ export function isInNodeEndBoundary(rng, node) {
 }
 export function isBoundaryNode(node, dir) {
   var tmp;
-  while (!domUtils.isBody(node)) {
+  while (!isBody(node)) {
     tmp = node;
     node = node.parentNode;
     if (tmp !== node[dir]) {
@@ -2515,4 +2544,8 @@ export function isBoundaryNode(node, dir) {
     }
   }
   return true;
-} 
+}
+
+export const fillHtml = browser.ie11below ? "&nbsp;" : "<br/>"
+
+export const fillCharReg = new RegExp(fillChar, "g");

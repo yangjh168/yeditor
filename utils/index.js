@@ -1,3 +1,4 @@
+import { isString, isArray, isDate } from './validate'
 /**
    * 用给定的迭代器遍历对象
    * @method each
@@ -197,8 +198,8 @@ export function extend2(t) {
    */
 export function inherits(subClass, superClass) {
   var oldP = subClass.prototype,
-    newP = utils.makeInstance(superClass.prototype);
-  utils.extend(newP, oldP, true);
+    newP = makeInstance(superClass.prototype);
+  extend(newP, oldP, true);
   subClass.prototype = newP;
   return (newP.constructor = subClass);
 }
@@ -421,7 +422,7 @@ export function trim(str) {
    */
 export function listToMap(list) {
   if (!list) return {};
-  list = utils.isArray(list) ? list : list.split(",");
+  list = isArray(list) ? list : list.split(",");
   for (var i = 0, ci, obj = {}; (ci = list[i++]); ) {
     obj[ci.toUpperCase()] = obj[ci] = 1;
   }
@@ -792,8 +793,8 @@ export function clone(source, target) {
     if (source.hasOwnProperty(i)) {
       tmp = source[i];
       if (typeof tmp == "object") {
-        target[i] = utils.isArray(tmp) ? [] : {};
-        utils.clone(source[i], target[i]);
+        target[i] = isArray(tmp) ? [] : {};
+        clone(source[i], target[i]);
       } else {
         target[i] = tmp;
       }
@@ -1031,7 +1032,7 @@ export function serializeParam(json) {
       )
     ) {
       strArr.push(encodeURIComponent(i) + "=" + encodeURIComponent(json[i]));
-    } else if (utils.isArray(json[i])) {
+    } else if (isArray(json[i])) {
       //支持传数组内容
       for (var j = 0; j < json[i].length; j++) {
         strArr.push(
@@ -1073,11 +1074,11 @@ export function clearEmptyAttrs(obj) {
   return obj;
 }
 export function str2json(s) {
-  if (!utils.isString(s)) return null;
+  if (!isString(s)) return null;
   if (window.JSON) {
     return JSON.parse(s);
   } else {
-    return new Function("return " + utils.trim(s || ""))();
+    return new Function("return " + trim(s || ""))();
   }
 }
 
@@ -1130,7 +1131,7 @@ export const json2str = (function() {
             if (preComma) {
               result.push(",");
             }
-            result.push(utils.json2str(item));
+            result.push(json2str(item));
             preComma = 1;
         }
       }
@@ -1177,13 +1178,13 @@ export const json2str = (function() {
         default:
           if (value === null) {
             return "null";
-          } else if (utils.isArray(value)) {
+          } else if (isArray(value)) {
             return encodeArray(value);
-          } else if (utils.isDate(value)) {
+          } else if (isDate(value)) {
             return encodeDate(value);
           } else {
             var result = ["{"],
-              encode = utils.json2str,
+              encode = json2str,
               preComma,
               item;
 
