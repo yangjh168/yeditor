@@ -1,3 +1,6 @@
+import { isArray, isFunction, isString } from '../utils/validate'
+import * as utils from '../utils/index'
+
 class Ajax {
 
   creatAjaxRequest
@@ -43,7 +46,7 @@ class Ajax {
         )
       ) {
         strArr.push(encodeURIComponent(i) + "=" + encodeURIComponent(json[i]));
-      } else if (utils.isArray(json[i])) {
+      } else if (isArray(json[i])) {
         //支持传数组内容
         for (var j = 0; j < json[i].length; j++) {
           strArr.push(
@@ -127,11 +130,11 @@ class Ajax {
       reg = new RegExp("(\\?|&)" + callbackField + "=([^&]*)"),
       matches;
 
-    if (utils.isFunction(successhandler)) {
+    if (isFunction(successhandler)) {
       callbackFnName =
         "bd__editor__" + Math.floor(Math.random() * 2147483648).toString(36);
       window[callbackFnName] = getCallBack(0);
-    } else if (utils.isString(successhandler)) {
+    } else if (isString(successhandler)) {
       callbackFnName = successhandler;
     } else {
       if ((matches = reg.exec(url))) {

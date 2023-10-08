@@ -1,4 +1,9 @@
-import { fillChar as DomfillChar } from './domUtils'
+import * as domUtils from './domUtils'
+import browser from './browser'
+import { isArray } from '../utils/validate'
+import * as utils from '../utils/index'
+import dtd from './dtd'
+
 /**
  * Range封装
  * @file
@@ -1432,7 +1437,7 @@ class Range {
        */
   removeInlineStyle(tagNames) {
     if (this.collapsed) return this;
-    tagNames = utils.isArray(tagNames) ? tagNames : [tagNames];
+    tagNames = isArray(tagNames) ? tagNames : [tagNames];
     this.shrinkBoundary().adjustmentBoundary();
     var start = this.startContainer,
       end = this.endContainer;
@@ -1702,7 +1707,7 @@ class Range {
     if (
       this.collapsed &&
       start.nodeType == 3 &&
-      start.nodeValue.replace(new RegExp("^" + DomfillChar), "")
+      start.nodeValue.replace(new RegExp("^" + domUtils.fillChar), "")
         .length +
         1 ==
         start.nodeValue.length
@@ -1975,3 +1980,5 @@ class Range {
     return this.moveToBookmark(bookmark);
   }
 }
+
+export default Range

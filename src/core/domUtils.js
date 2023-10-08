@@ -1,4 +1,8 @@
-import * as utils from '@/utils/index'
+import * as utils from '../utils/index'
+import browser, { ie } from './browser'
+import { isArray, isString, isRegExp, isFunction } from '../utils/validate'
+import dtd from './dtd'
+
 /**
  * Dom操作工具包
  * @file
@@ -359,7 +363,7 @@ export function findParent(node, filterFn, includeSelf) {
    * ```
    */
 export function findParentByTagName(node, tagNames, includeSelf, excludeFn) {
-  tagNames = utils.listToMap(utils.isArray(tagNames) ? tagNames : [tagNames]);
+  tagNames = utils.listToMap(isArray(tagNames) ? tagNames : [tagNames]);
   return findParent(
     node,
     function(node) {
@@ -773,7 +777,7 @@ export function getXY(element) {
    * ```
    */
 export function on(element, type, handler) {
-  var types = utils.isArray(type) ? type : utils.trim(type).split(/\s+/),
+  var types = isArray(type) ? type : utils.trim(type).split(/\s+/),
     k = types.length;
   if (k)
     while (k--) {
@@ -832,7 +836,7 @@ export function on(element, type, handler) {
    * ```
    */
 export function un(element, type, handler) {
-  var types = utils.isArray(type) ? type : utils.trim(type).split(/\s+/),
+  var types = isArray(type) ? type : utils.trim(type).split(/\s+/),
     k = types.length;
   if (k)
     while (k--) {
@@ -1239,7 +1243,7 @@ export function mergeChild(node, tagName, attrs) {
    * @return { Array } 符合条件的节点集合
    */
 export function getElementsByTagName(node, name, filter) {
-  if (filter && utils.isString(filter)) {
+  if (filter && isString(filter)) {
     var className = filter;
     filter = function(node) {
       return hasClass(node, className);
@@ -1474,7 +1478,7 @@ unSelectable: (ie && browser.ie9below) || browser.opera
    * ```
    */
 export function removeAttributes(node, attrNames) {
-  attrNames = utils.isArray(attrNames)
+  attrNames = isArray(attrNames)
     ? attrNames
     : utils.trim(attrNames).replace(/[ ]{2,}/g, " ").split(" ");
   for (var i = 0, ci; (ci = attrNames[i++]); ) {
@@ -1679,7 +1683,7 @@ export function getComputedStyle(element, styleName) {
    * ```
    */
 export function removeClasses(elm, classNames) {
-  classNames = utils.isArray(classNames)
+  classNames = isArray(classNames)
     ? classNames
     : utils.trim(classNames).replace(/[ ]{2,}/g, " ").split(" ");
   for (var i = 0, ci, cls = elm.className; (ci = classNames[i++]); ) {
@@ -1789,7 +1793,7 @@ export function addClass(elm, classNames) {
    * ```
    */
 export function hasClass(element, className) {
-  if (utils.isRegExp(className)) {
+  if (isRegExp(className)) {
     return className.test(element.className);
   }
   className = utils.trim(className).replace(/[ ]{2,}/g, " ").split(" ");
@@ -2492,12 +2496,12 @@ export function isTagNode(node, tagNames) {
    */
 export function filterNodeList(nodelist, filter, forAll) {
   var results = [];
-  if (!utils.isFunction(filter)) {
+  if (!isFunction(filter)) {
     var str = filter;
     filter = function(n) {
       return (
         utils.indexOf(
-          utils.isArray(str) ? str : str.split(" "),
+          isArray(str) ? str : str.split(" "),
           n.tagName.toLowerCase()
         ) != -1
       );

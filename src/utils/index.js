@@ -1,4 +1,6 @@
 import { isString, isArray, isDate } from './validate'
+import browser from '../core/browser'
+
 /**
    * 用给定的迭代器遍历对象
    * @method each
@@ -676,7 +678,7 @@ export const loadFile = (function() {
    */
 export function isEmptyObject(obj) {
   if (obj == null) return true;
-  if (this.isArray(obj) || this.isString(obj)) return obj.length === 0;
+  if (isArray(obj) || isString(obj)) return obj.length === 0;
   for (var key in obj) if (obj.hasOwnProperty(key)) return false;
   return true;
 }
@@ -872,12 +874,12 @@ export const domReady = (function() {
     } else {
       doc.isReady && doReady(doc);
       if (browser.ie && browser.version != 11) {
-        (function() {
+        (function doScrollLeft() {
           if (doc.isReady) return;
           try {
             doc.documentElement.doScroll("left");
           } catch (error) {
-            setTimeout(arguments.callee, 0);
+            setTimeout(doScrollLeft, 0);
             return;
           }
           doReady(doc);
@@ -886,18 +888,11 @@ export const domReady = (function() {
           doReady(doc);
         });
       } else {
-        doc.addEventListener(
-          "DOMContentLoaded",
-          function() {
-            doc.removeEventListener(
-              "DOMContentLoaded",
-              arguments.callee,
-              false
-            );
-            doReady(doc);
-          },
-          false
-        );
+        const loadedFn = function() {
+          doc.removeEventListener("DOMContentLoaded", loadedFn, false);
+          doReady(doc);
+        }
+        doc.addEventListener( "DOMContentLoaded", loadedFn, false);
         win.addEventListener(
           "load",
           function() {

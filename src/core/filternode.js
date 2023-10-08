@@ -1,3 +1,5 @@
+import { isFunction, isArray } from '../utils/validate'
+import * as utils from '../utils/index'
 /**
  * UE过滤节点的静态方法
  * @file
@@ -30,7 +32,7 @@ export function filterNode() {
         if ((val = rules[node.tagName])) {
           if (val === "-") {
             node.parentNode.removeChild(node);
-          } else if (utils.isFunction(val)) {
+          } else if (isFunction(val)) {
             var parentNode = node.parentNode,
               index = node.getIndex();
             val(node);
@@ -59,7 +61,7 @@ export function filterNode() {
               for (var a in attrs) {
                 tmpVal = node.getAttr(a);
                 //todo 只先对style单独处理
-                if (a == "style" && utils.isArray(attrs[a])) {
+                if (a == "style" && isArray(attrs[a])) {
                   var tmpCssStyle = [];
                   utils.each(attrs[a], function(v) {
                     var tmp;

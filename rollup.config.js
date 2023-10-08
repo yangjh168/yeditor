@@ -4,14 +4,27 @@ import babel from '@rollup/plugin-babel';
 import json from '@rollup/plugin-json';
 
 export default {
-  input:'./src/main.js',//打包⽂件⼊⼝
-  output:{
-    file:'./dist/bundle.js',//指定打包后存放的⽂件路径
-    format:'cjs',//打包⽂件输出格式，输⼊⽤require，输出⽤module.exports
-  },
+  input: './src/index.js',//打包⽂件⼊⼝
+  output: [
+    {
+      name: 'yeditor',
+      file: './dist/yeditor.js',//指定打包后存放的⽂件路径
+      format: 'umd', //打包⽂件输出格式，输⼊⽤require，输出⽤module.exports
+      sourcemap: false,
+    },
+    {
+      file: './dist/yeditor.es.js',//指定打包后存放的⽂件路径
+      format: 'es',
+      sourcemap: false,
+    },
+  ],
   plugins: [ 
     commonjs(),
-    resolve(),
+    resolve({
+      module: true,
+      jsnext: true,
+      main: true
+    }),
     babel({ babelHelpers: 'bundled' }),
     json()
   ]

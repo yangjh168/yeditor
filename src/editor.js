@@ -1,4 +1,8 @@
-const UE = {
+var UEDITOR_CONFIG = window.UEDITOR_CONFIG || {};
+
+var baidu = window.baidu || {};
+
+const UE = window.UE = baidu.editor =  {
   plugins: {},
   commands: {},
   instants: {},
@@ -8,3 +12,9 @@ const UE = {
 };
 
 export default UE
+
+export {
+  baidu,
+  // dom,
+  UEDITOR_CONFIG
+}

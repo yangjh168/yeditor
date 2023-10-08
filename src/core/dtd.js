@@ -1,13 +1,13 @@
 ///import editor.js
 ///import core/dom/dom.js
 ///import core/utils.js
-import { extend2 } from '@/utils/index'
+import { extend2 } from '../utils/index'
 /**
  * dtd html语义化的体现类
  * @constructor
  * @namespace dtd
  */
-export const dtd = (function() {
+const dtd = (function() {
   function _(s) {
     for (var k in s) {
       s[k.toUpperCase()] = s[k];
@@ -434,3 +434,5 @@ export const dtd = (function() {
   });
 })();
 // dom.dtd = dtd
+
+export default dtd

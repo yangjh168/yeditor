@@ -1,6 +1,7 @@
-import browser from './browser'
 import { getWindow, on, inDoc, findParents, isBody, getNodeIndex } from './domUtils'
-
+import browser from './browser'
+import Range from './Range'
+import dtd from './dtd'
 
 export function getBoundaryInformation(range, start) {
   var getIndex = getNodeIndex;
@@ -123,11 +124,12 @@ export function _getIERange(sel) {
  * @module UE.dom
  * @class Selection
  */
-export default class Selection {
+class Selection {
   document
-  iframe
+  
   constructor (doc) {
     this.document = doc
+    var iframe;
     if (browser.ie9below) {
       iframe = getWindow(doc).frameElement;
       on(iframe, "beforedeactivate", function() {
@@ -279,7 +281,7 @@ export default class Selection {
     if (me._cachedRange != null) {
       return this._cachedRange;
     }
-    var range = new baidu.editor.dom.Range(me.document);
+    var range = new Range(me.document);
 
     if (browser.ie9below) {
       var nativeRange = me.getIERange();
@@ -409,3 +411,5 @@ export default class Selection {
     this.getNative()[browser.ie9below ? "empty" : "removeAllRanges"]();
   }
 }
+
+export default Selection

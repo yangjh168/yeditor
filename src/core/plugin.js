@@ -1,6 +1,6 @@
 import UE from "../editor";
-import { each, trim } from '@/utils/index'
-import { isFunction, isArray } from '@/utils/index'
+import { each, trim } from '../utils/index'
+import { isFunction, isArray } from '../utils/validate'
 /**
  * Created with JetBrains PhpStorm.
  * User: campaign

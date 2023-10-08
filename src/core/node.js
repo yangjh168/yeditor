@@ -1,3 +1,6 @@
+import { isString, isObject } from '../utils/validate'
+import dtd from './dtd'
+
 var notTransAttrs = {
   href: 1,
   src: 1,
@@ -278,7 +281,7 @@ class uNode {
     if (this.type != "element" || dtd.$empty[this.tagName]) {
       return this;
     }
-    if (utils.isString(htmlstr)) {
+    if (isString(htmlstr)) {
       if (this.children) {
         for (var i = 0, ci; (ci = this.children[i++]); ) {
           ci.parentNode = null;
@@ -596,7 +599,7 @@ class uNode {
     if (!this.attrs) {
       this.attrs = {};
     }
-    if (utils.isObject(attrName)) {
+    if (isObject(attrName)) {
       for (var a in attrName) {
         if (!attrName[a]) {
           delete this.attrs[a];
@@ -726,7 +729,7 @@ class uNode {
     if (!cssStyle) {
       cssStyle = "";
     }
-    if (utils.isObject(name)) {
+    if (isObject(name)) {
       for (var a in name) {
         exec(a, name[a]);
       }

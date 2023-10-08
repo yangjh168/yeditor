@@ -1,3 +1,4 @@
+import browser from './browser'
 /**
  * UE过滤word的静态方法
  * @file

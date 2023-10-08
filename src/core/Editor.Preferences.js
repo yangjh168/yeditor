@@ -1,12 +1,13 @@
 import LoadConfig from './loadconfig'
 import LocalStorage from './localstorage'
+import { isString } from '../utils/validate'
 
 var ROOTKEY = "ueditor_preference";
 
 class EditorPreferences extends LoadConfig {
   setPreferences = function(key, value) {
     var obj = {};
-    if (utils.isString(key)) {
+    if (isString(key)) {
       obj[key] = value;
     } else {
       obj = key;
@@ -37,3 +38,5 @@ class EditorPreferences extends LoadConfig {
     data && LocalStorage.saveLocalData(ROOTKEY, utils.json2str(data));
   };
 }
+
+export default EditorPreferences

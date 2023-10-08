@@ -1,3 +1,4 @@
+import * as utils from '../utils/index'
 /**
  * UE采用的事件基类
  * @file

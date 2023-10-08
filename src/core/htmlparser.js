@@ -1,3 +1,6 @@
+import { isArray } from "../utils/validate";
+import * as utils from '../utils/index'
+import dtd from './dtd'
 /**
  * html字符串转换成uNode节点
  * @file
@@ -125,7 +128,7 @@ export function htmlparser(htmlstr, ignoreBlank) {
         hasParent;
       while (tmpParent.type != "root") {
         if (
-          utils.isArray(needParentTag)
+          isArray(needParentTag)
             ? utils.indexOf(needParentTag, tmpParent.tagName) != -1
             : needParentTag == tmpParent.tagName
         ) {
@@ -138,7 +141,7 @@ export function htmlparser(htmlstr, ignoreBlank) {
       if (!hasParent) {
         parent = element(
           parent,
-          utils.isArray(needParentTag) ? needParentTag[0] : needParentTag
+          isArray(needParentTag) ? needParentTag[0] : needParentTag
         );
       }
     }

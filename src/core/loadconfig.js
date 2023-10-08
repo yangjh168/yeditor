@@ -1,6 +1,14 @@
 import EventBase from "./EventBase";
+import { isFunction } from '../utils/validate'
+import * as utils from '../utils/index'
+import ajax from './ajax'
+
+var eval2 = eval;
 
 class LoadConfig extends EventBase {
+  /**
+   * 加载服务器配置
+   */
   loadServerConfig() {
     var me = this;
     setTimeout(function() {
@@ -19,14 +27,14 @@ class LoadConfig extends EventBase {
   
         /* 发出ajax请求 */
         me._serverConfigLoaded = false;
-  
+        console.log('configUrl', configUrl)
         configUrl &&
-          UE.ajax.request(configUrl, {
+          ajax.request(configUrl, {
             method: "GET",
             dataType: isJsonp ? "jsonp" : "",
             onsuccess: function(r) {
               try {
-                var config = isJsonp ? r : eval("(" + r.responseText + ")");
+                var config = isJsonp ? r : eval2("(" + r.responseText + ")");
                 utils.extend(me.options, config);
                 me.fireEvent("serverConfigLoaded");
                 me._serverConfigLoaded = true;
@@ -39,6 +47,7 @@ class LoadConfig extends EventBase {
             }
           });
       } catch (e) {
+        console.log(e)
         showErrorMsg(me.getLang("loadconfigError"));
       }
     });
@@ -58,7 +67,7 @@ class LoadConfig extends EventBase {
   }
   
   afterConfigReady(handler) {
-    if (!handler || !utils.isFunction(handler)) return;
+    if (!handler || !isFunction(handler)) return;
     var me = this;
     var readyHandler = function() {
       handler.apply(me, arguments);

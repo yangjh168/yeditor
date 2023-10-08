@@ -1,7 +1,12 @@
 import EditorPreferences from './Editor.Preferences'
-import { extend, clone, isEmptyObject, loadFile } from './utils/index'
-import UE from '@/editor'
-
+import { extend, clone, isEmptyObject, loadFile } from '../utils/index'
+import UE, { UEDITOR_CONFIG } from '../editor'
+import browser, { ie } from './browser'
+import { isString, isFunction, isArray } from '../utils/validate'
+import * as utils from '../utils/index'
+import * as domUtils from './domUtils'
+import Selection from './Selection'
+import dtd from './dtd'
 
 /**
  * 获取编辑器的html内容，赋值到编辑器所在表单的textarea文本域里面
@@ -12,7 +17,7 @@ import UE from '@/editor'
 function setValue(form, editor) {
   var textarea;
   if (editor.options.textarea) {
-    if (utils.isString(editor.options.textarea)) {
+    if (isString(editor.options.textarea)) {
       for (
         var i = 0, ti, tis = domUtils.getElementsByTagName(form, "textarea");
         (ti = tis[i++]);
@@ -275,6 +280,7 @@ class Editor extends EditorPreferences {
   outputRules = [];
   
   constructor (options) {
+    super()
     this.options = extend(clone(options || {}), UEDITOR_CONFIG, true);
     //设置默认的常用属性
     this.setOpt(defaultOptions(this));
@@ -300,7 +306,7 @@ class Editor extends EditorPreferences {
           type: "text/javascript",
           defer: "defer"
         },
-        function() {
+        () => {
           UE.plugin.load(this);
           langReadied(this);
         }
@@ -361,7 +367,7 @@ class Editor extends EditorPreferences {
        */
   setOpt(key, val) {
     var obj = {};
-    if (utils.isString(key)) {
+    if (isString(key)) {
       obj[key] = val;
     } else {
       obj = key;
@@ -428,7 +434,7 @@ class Editor extends EditorPreferences {
       getStyleValue = function(attr) {
         return parseInt(domUtils.getComputedStyle(container, attr));
       };
-    if (utils.isString(container)) {
+    if (isString(container)) {
       container = document.getElementById(container);
     }
     if (container) {
@@ -554,7 +560,7 @@ class Editor extends EditorPreferences {
     me.window = doc.defaultView || doc.parentWindow;
     me.iframe = me.window.frameElement;
     me.body = doc.body;
-    me.selection = new dom.Selection(doc);
+    me.selection = new Selection(doc);
     //gecko初始化就能得到range,无法判断isFocus了
     var geckoSel;
     if (browser.gecko && (geckoSel = this.selection.getNative())) {
@@ -814,7 +820,7 @@ class Editor extends EditorPreferences {
        */
   getContent(cmd, fn, notSetCursor, ignoreBlank, formatter) {
     var me = this;
-    if (cmd && utils.isFunction(cmd)) {
+    if (cmd && isFunction(cmd)) {
       fn = cmd;
       cmd = "";
     }
@@ -1432,7 +1438,7 @@ class Editor extends EditorPreferences {
        */
   setDisabled(except) {
     var me = this;
-    except = except ? (utils.isArray(except) ? except : [except]) : [];
+    except = except ? (isArray(except) ? except : [except]) : [];
     if (me.body.contentEditable == "true") {
       if (!me.lastBk) {
         me.lastBk = me.selection.getRange().createBookmark(true);
@@ -1546,6 +1552,7 @@ class Editor extends EditorPreferences {
        */
   getLang(path) {
     var lang = UE.I18N[this.options.lang];
+    console.log(lang)
     if (!lang) {
       throw Error("not import language file");
     }
