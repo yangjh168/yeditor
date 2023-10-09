@@ -21,7 +21,7 @@ export default Base =>
         this._Stateful_dGetHtmlTpl = this.getHtmlTpl;
         this.getHtmlTpl = this.Stateful_getHtmlTpl;
       }
-      Stateful_getHtmlTpl() {
+      Stateful_getHtmlTpl(){
         var tpl = this._Stateful_dGetHtmlTpl();
         // 使用function避免$转义
         return tpl.replace(/stateful/g, function() {

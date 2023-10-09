@@ -22,7 +22,7 @@ import dtd from './dtd'
      * 更新range的collapse状态
      * @param  {Range}   range    range对象
      */
-export function updateCollapse(range) {
+function updateCollapse(range) {
   range.collapsed =
     range.startContainer &&
     range.endContainer &&
@@ -30,7 +30,7 @@ export function updateCollapse(range) {
     range.startOffset == range.endOffset;
 }
 
-export function selectOneNode(rng) {
+function selectOneNode(rng) {
   return (
     !rng.collapsed &&
     rng.startContainer.nodeType == 1 &&
@@ -38,7 +38,7 @@ export function selectOneNode(rng) {
     rng.endOffset - rng.startOffset == 1
   );
 }
-export function setEndPoint(toStart, node, offset, range) {
+function setEndPoint(toStart, node, offset, range) {
   //如果node是自闭合标签要处理
   if (
     node.nodeType == 1 &&
@@ -64,7 +64,7 @@ export function setEndPoint(toStart, node, offset, range) {
   return range;
 }
 
-export function execContentsAction(range, action) {
+function execContentsAction(range, action) {
   //调整边界
   //range.includeBookmark();
   var start = range.startContainer,
@@ -191,7 +191,7 @@ export function execContentsAction(range, action) {
 }
 
 var guid = 0,
-fillChar,
+fillChar = domUtils.fillChar,
 fillData
 
 /**

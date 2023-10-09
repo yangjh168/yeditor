@@ -12,7 +12,7 @@ import dtd from './dtd'
  * 获取编辑器的html内容，赋值到编辑器所在表单的textarea文本域里面
  * @private
  * @method setValue
- * @param { UE.Editor } editor 编辑器事例
+ * @param { UE.Editor } editor 编辑器实例
  */
 function setValue(form, editor) {
   var textarea;
@@ -414,20 +414,20 @@ class Editor extends EditorPreferences {
   }
 
   /**
-       * 渲染编辑器的DOM到指定容器
-       * @method render
-       * @param { String } containerId 指定一个容器ID
-       * @remind 执行该方法,会触发ready事件
-       * @warning 必须且只能调用一次
-       */
+   * 渲染编辑器的DOM到指定容器
+   * @method render
+   * @param { String } containerId 指定一个容器ID
+   * @remind 执行该方法,会触发ready事件
+   * @warning 必须且只能调用一次
+   */
 
   /**
-       * 渲染编辑器的DOM到指定容器
-       * @method render
-       * @param { Element } containerDom 直接指定容器对象
-       * @remind 执行该方法,会触发ready事件
-       * @warning 必须且只能调用一次
-       */
+   * 渲染编辑器的DOM到指定容器
+   * @method render
+   * @param { Element } containerDom 直接指定容器对象
+   * @remind 执行该方法,会触发ready事件
+   * @warning 必须且只能调用一次
+   */
   render(container) {
     var me = this,
       options = me.options,
@@ -1552,7 +1552,6 @@ class Editor extends EditorPreferences {
        */
   getLang(path) {
     var lang = UE.I18N[this.options.lang];
-    console.log(lang)
     if (!lang) {
       throw Error("not import language file");
     }

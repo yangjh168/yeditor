@@ -1,5 +1,6 @@
 import UIBase from "./uibase";
 import * as domUtils from '../core/domUtils'
+import * as uiUtils from './uiutils'
 
 var allPopups = [];
 
@@ -205,7 +206,7 @@ class Popup extends UIBase {
       " " + ANCHOR_CLASSES[(sideUp ? 1 : 0) * 2 + (sideLeft ? 1 : 0)];
     if (this.editor) {
       popEl.style.zIndex = this.editor.container.style.zIndex * 1 + 10;
-      baidu.editor.ui.uiUtils.getFixedLayer().style.zIndex =
+      uiUtils.getFixedLayer().style.zIndex =
         popEl.style.zIndex - 1;
     }
     this.getDom().style.visibility = "visible";

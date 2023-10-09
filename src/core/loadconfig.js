@@ -27,7 +27,7 @@ class LoadConfig extends EventBase {
   
         /* 发出ajax请求 */
         me._serverConfigLoaded = false;
-        console.log('configUrl', configUrl)
+        // console.log('configUrl', configUrl)
         configUrl &&
           ajax.request(configUrl, {
             method: "GET",

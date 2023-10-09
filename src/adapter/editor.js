@@ -844,10 +844,15 @@ class EditorUI extends UIBase {
 
 export default EditorUI
 
+
+/**
+ * 存储编辑器实例
+ */
 var instances = {};
 
 const createEditor = function(options) { //UE.ui.Editor
   var editor = new Editor(options);
+  console.log(editor)
   editor.options.editor = editor;
   utils.loadFile(document, {
     href:

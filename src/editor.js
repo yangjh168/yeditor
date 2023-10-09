@@ -15,6 +15,5 @@ export default UE
 
 export {
   baidu,
-  // dom,
   UEDITOR_CONFIG
 }

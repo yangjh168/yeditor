@@ -74,7 +74,7 @@ export function getClientRect(element) {
   return rect;
 }
 export function getViewportRect() {
-  var viewportEl = uiUtils.getViewportElement();
+  var viewportEl = getViewportElement();
   var width = (window.innerWidth || viewportEl.clientWidth) | 0;
   var height = (window.innerHeight || viewportEl.clientHeight) | 0;
   return {
@@ -88,7 +88,7 @@ export function getViewportRect() {
 }
 export function setViewportOffset(element, offset) {
   var rect;
-  var fixedLayer = uiUtils.getFixedLayer();
+  var fixedLayer = getFixedLayer();
   if (element.parentNode === fixedLayer) {
     element.style.left = offset.left + "px";
     element.style.top = offset.top + "px";
@@ -98,8 +98,8 @@ export function setViewportOffset(element, offset) {
 }
 export function getEventOffset(evt) {
   var el = evt.target || evt.srcElement;
-  var rect = uiUtils.getClientRect(el);
-  var offset = uiUtils.getViewportOffsetByEvent(evt);
+  var rect = getClientRect(el);
+  var offset = getViewportOffsetByEvent(evt);
   return {
     left: offset.left - rect.left,
     top: offset.top - rect.top
@@ -113,7 +113,7 @@ export function getViewportOffsetByEvent(evt) {
     top: evt.clientY
   };
   if (frameEl && el.ownerDocument !== document) {
-    var rect = uiUtils.getClientRect(frameEl);
+    var rect = getClientRect(frameEl);
     offset.left += rect.left;
     offset.top += rect.top;
   }
@@ -233,7 +233,7 @@ export function makeUnselectable(element) {
     if (element.hasChildNodes()) {
       for (var i = 0; i < element.childNodes.length; i++) {
         if (element.childNodes[i].nodeType == 1) {
-          uiUtils.makeUnselectable(element.childNodes[i]);
+          makeUnselectable(element.childNodes[i]);
         }
       }
     }
@@ -250,7 +250,7 @@ export function makeUnselectable(element) {
 
 function updateFixedOffset() {
   var layer = document.getElementById("edui_fixedlayer");
-  uiUtils.setViewportOffset(layer, {
+  setViewportOffset(layer, {
     left: 0,
     top: 0
   });

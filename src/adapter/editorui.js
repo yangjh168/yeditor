@@ -1,12 +1,19 @@
-import * as utils from '../utils'
+import * as utils from '../utils/index'
 import { editorui } from '../ui/ui'
 import browser from '../core/browser'
 import Button from '../ui/button'
+import AutoTypeSetButton from '../ui/autotypesetbutton'
+import ColorButton from '../ui/colorbutton'
+import MenuButton from '../ui/menubutton'
+import Dialog from '../ui/dialog'
+import MultiMenuPop from '../ui/multiMenu'
+import Combox from '../ui/combox'
+import TableButton from '../ui/tablebutton'
 
-var _Dialog = editorui.Dialog;
-  editorui.buttons = {};
+var _Dialog = Dialog;
+editorui.buttons = {};
 
-  editorui.Dialog = function(options) {
+  const editorDialog = function(options) {
     var dialog = new _Dialog(options);
     dialog.addListener("hide", function() {
       if (dialog.editor) {
@@ -199,7 +206,7 @@ var _Dialog = editorui.Dialog;
   for (var i = 0, ci; (ci = ["backcolor", "forecolor"][i++]); ) {
     editorui[ci] = (function(cmd) {
       return function(editor) {
-        var ui = new editorui.ColorButton({
+        var ui = new ColorButton({
           className: "edui-for-" + cmd,
           color: "default",
           title:
@@ -273,7 +280,7 @@ var _Dialog = editorui.Dialog;
             var dialog;
             //没有iframeUrl不创建dialog
             if (iframeUrl) {
-              dialog = new editorui.Dialog(
+              dialog = new editorDialog(
                 utils.extend(
                   {
                     iframeUrl: editor.ui.mapUrl(iframeUrl),
@@ -382,7 +389,7 @@ var _Dialog = editorui.Dialog;
       (editor.options.iframeUrlMap || {})["snapscreen"] ||
       iframeUrlMap["snapscreen"];
     if (iframeUrl) {
-      var dialog = new editorui.Dialog({
+      var dialog = new editorDialog({
         iframeUrl: editor.ui.mapUrl(iframeUrl),
         editor: editor,
         className: "edui-for-snapscreen",
@@ -436,7 +443,7 @@ var _Dialog = editorui.Dialog;
       });
     });
 
-    var ui = new editorui.Combox({
+    var ui = new Combox({
       editor: editor,
       items: items,
       onselect: function(t, index) {
@@ -742,7 +749,7 @@ var _Dialog = editorui.Dialog;
       editor.options.labelMap["inserttable"] ||
       editor.getLang("labelMap.inserttable") ||
       "";
-    var ui = new editorui.TableButton({
+    var ui = new TableButton({
       editor: editor,
       title: title,
       className: "edui-for-inserttable",
@@ -778,7 +785,7 @@ var _Dialog = editorui.Dialog;
         }
       });
     }
-    var ui = new editorui.MenuButton({
+    var ui = new MenuButton({
       editor: editor,
       className: "edui-for-lineheight",
       title:
@@ -822,7 +829,7 @@ var _Dialog = editorui.Dialog;
             }
           });
         }
-        var ui = new editorui.MenuButton({
+        var ui = new MenuButton({
           editor: editor,
           className: "edui-for-rowspacing" + cmd,
           title:
@@ -870,7 +877,7 @@ var _Dialog = editorui.Dialog;
             onclick: _onMenuClick
           });
         }
-        var ui = new editorui.MenuButton({
+        var ui = new MenuButton({
           editor: editor,
           className: "edui-for-" + cmd,
           title: editor.getLang("labelMap." + cmd) || "",
@@ -925,7 +932,7 @@ var _Dialog = editorui.Dialog;
   // 表情
   editorui["emotion"] = function(editor, iframeUrl) {
     var cmd = "emotion";
-    var ui = new editorui.MultiMenuPop({
+    var ui = new MultiMenuPop({
       title:
         editor.options.labelMap[cmd] ||
           editor.getLang("labelMap." + cmd + "") ||
@@ -947,22 +954,22 @@ var _Dialog = editorui.Dialog;
   };
 
   editorui.autotypeset = function(editor) {
-    var ui = new editorui.AutoTypeSetButton({
-      editor: editor,
-      title:
-        editor.options.labelMap["autotypeset"] ||
-          editor.getLang("labelMap.autotypeset") ||
-          "",
-      className: "edui-for-autotypeset",
-      onbuttonclick: function() {
-        editor.execCommand("autotypeset");
-      }
-    });
-    editorui.buttons["autotypeset"] = ui;
-    editor.addListener("selectionchange", function() {
-      ui.setDisabled(editor.queryCommandState("autotypeset") == -1);
-    });
-    return ui;
+    // var ui = new AutoTypeSetButton({
+    //   editor: editor,
+    //   title:
+    //     editor.options.labelMap["autotypeset"] ||
+    //       editor.getLang("labelMap.autotypeset") ||
+    //       "",
+    //   className: "edui-for-autotypeset",
+    //   onbuttonclick: function() {
+    //     editor.execCommand("autotypeset");
+    //   }
+    // });
+    // editorui.buttons["autotypeset"] = ui;
+    // editor.addListener("selectionchange", function() {
+    //   ui.setDisabled(editor.queryCommandState("autotypeset") == -1);
+    // });
+    return null// ui;
   };
 
   /* 简单上传插件 */
